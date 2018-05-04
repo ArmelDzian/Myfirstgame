@@ -5,13 +5,15 @@
         <title>A simple game</title>
         <style>
             * { padding: 20px; margin: 0; }
-            canvas { background: rgb(255, 255, 255); display: block; margin: 0 auto; width: 90%; height: 90%}
+            canvas { background: rgb(255, 255, 255); display: block; margin: 0 auto; width: 70%; height: 80%}
         </style>
         <script src="script.js"></script>
     </head>
     <body onload = "init()">
-
-        <canvas id="myCanvas"></canvas>
-
+        <p id = "bestScore">BEST SCORE : 0</p>
+        <p id="score"> SCORE: 0</p>
+        <div id = "container">
+            <canvas id="myCanvas"></canvas>
+        </div>
     </body>
 </html>
