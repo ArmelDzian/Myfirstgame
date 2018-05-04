@@ -73,7 +73,7 @@ function init(){
                 bestScore = score;
             }
             if(score-oldScore == 1000){
-                dx += 0.025;
+                dx += 0.02;
                 oldScore=score;
                 console.log("speed up to " + dx.toString());
             }
