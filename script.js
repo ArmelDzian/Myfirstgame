@@ -1,23 +1,27 @@
 
 function init(){
-    var gamerun = true; // control variable for the game over window
+    var startMenu = true;
+    var gamerun = false; // control variable for the game over window
     var gameDisplayed; // control variable for the reload sequance after game over
     var nbJumps = 0;
     var score = 0;
     var bestScore = 0;
+    var container = document.getElementById('container'); //initialy contains the canvas
     var canvas = document.getElementById("myCanvas"); // html reference for the cenvas
-    var ctx = canvas.getContext("2d"); // html reference for the drawing tool
-    var obstacles = [];
-    var player = {x:canvas.width/6, y:canvas.height-5 - 16, height:20, width:10};
+    var ctx; // html reference for the drawing tool
+    var obstacles;
+    var player;
+    //speed and acceleration
+    var dx = 0.5;
+    var verticalSpeedPlayer = 0;
+    var gravity = 0.07;
 
-    function getObstacle(randomizer, array){
+    function getObstacle(randomizer, array){ // obstacle generator takes in a random number 0<n<1 and the obtacle array
         if(randomizer < 0.005){
             var newObstacle = { x:canvas.width, y:canvas.height-5 - 16 , height:16, width:8};
             array.push(newObstacle);
         }
     }
-
-    getObstacle(0,obstacles); // first obstacle
 
     function draw(){ // display faunction
         document.getElementById("score").innerHTML = "SCORE : " + score.toString();
@@ -26,33 +30,42 @@ function init(){
 
         for (var i = 0; i < obstacles.length; i++){ // obstacle drawing
             ctx.beginPath();
-            ctx.rect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
-            ctx.fillStyle = "#666666";
-            ctx.fill();
+                ctx.rect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+                ctx.fillStyle = "#666666";
+                ctx.fill();
             ctx.closePath();
         }
 
         ctx.beginPath(); // player drawing
-        ctx.rect(player.x, player.y, player.width, player.height);
-        ctx.fillStyle = "#cc0000";
-        ctx.fill();
+            ctx.rect(player.x, player.y, player.width, player.height);
+            ctx.fillStyle = "#cc0000";
+            ctx.fill();
         ctx.closePath();
 
-        ctx.beginPath(); // draws the ground line
+        ctx.beginPath(); // ground line drawing
             ctx.rect(0, canvas.height-5, canvas.width, 1);
             ctx.fillStyle = "#666666";
             ctx.fill();
         ctx.closePath();
     }
 
-    //speed and acceleration
-    var dx = 0.5;
-    var verticalSpeedPlayer = 0;
-    var gravity = 0.07;
+    function loop() { // main loop function
 
-
-    function loop() { // the drawing function
-        if(gamerun){
+        if(startMenu){ // initiative sequence
+            container.innerHTML = "<h1> PRESS 'UP' TO PLAY </h1>";
+            document.body.onkeydown = function(e){
+                if(e.keyCode == 38){
+                    container.innerHTML = '<canvas id="myCanvas"></canvas> <h2>PRESS "UP" TO JUMP</h2>';
+                    canvas = document.getElementById("myCanvas"); // html reference for the cenvas
+                    ctx = canvas.getContext("2d"); // html reference for the drawing tool
+                    obstacles = [];
+                    player = {x:canvas.width/6, y:canvas.height-5 - 16, height:20, width:10};
+                    getObstacle(0,obstacles); // first obstacle
+                    gamerun = true;
+                    startMenu = false;
+                }
+            }
+        }else if(gamerun){
             gameDisplayed = true;
             score++;
             if(score > bestScore){
@@ -66,7 +79,7 @@ function init(){
                         nbJumps++;
                     }else if(nbJumps == 1){
                         console.log("Small jump");
-                        verticalSpeedPlayer = 1.4;
+                        verticalSpeedPlayer = 1.8;
                         nbJumps++;
                     }
                 }
@@ -105,25 +118,26 @@ function init(){
             if (obstacles[obstacles.length-1].x < canvas.width-obstacles[obstacles.length-1].width){ //if the last obstacle is clear of the canvas edge, try to generate  new one
                 getObstacle(Math.random(),obstacles);
             }
-            draw();
+            draw(); // call for the display refreshment
 
         }else{
-            var container = document.getElementById('container');
             if(gameDisplayed){
                 console.log(document.body.innerHTML);
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // refresh
-                container.innerHTML = "<p> GAME OVER </p> <button id='restart'>RESTART</button>";
+                container.innerHTML = "<h1> GAME OVER </h1> <h2>PRESS 'UP' TO RESTART</h2>";
                 score = 0;
                 gameDisplayed = false;
             }else{
-                document.getElementById("restart").onclick = function(){
-                    container.innerHTML = '<canvas id="myCanvas"></canvas>';
-                    obstacles = [];
-                    getObstacle(0,obstacles);
-                    player = {x:canvas.width/6, y:canvas.height-5 - 16, height:20, width:10};
-                    canvas = document.getElementById("myCanvas"); // html reference for the cenvas
-                    ctx = canvas.getContext("2d"); // html reference for the drawing tool
-                    gamerun = true;
+                document.body.onkeydown = function(e){
+                    if(e.keyCode == 38){
+                        container.innerHTML = '<canvas id="myCanvas"></canvas>';
+                        obstacles = [];
+                        getObstacle(0,obstacles);
+                        player = {x:canvas.width/6, y:canvas.height-5 - 16, height:20, width:10};
+                        canvas = document.getElementById("myCanvas"); // html reference for the cenvas
+                        ctx = canvas.getContext("2d"); // html reference for the drawing tool
+                        gamerun = true;
+                    }
                 }
             }
         }
