@@ -6,13 +6,14 @@ function init(){
     var nbJumps = 0;
     var score = 0;
     var bestScore = 0;
+    var oldScore = 0;
     var container = document.getElementById('container'); //initialy contains the canvas
     var canvas = document.getElementById("myCanvas"); // html reference for the cenvas
     var ctx; // html reference for the drawing tool
     var obstacles;
     var player;
     //speed and acceleration
-    var dx = 0.5;
+    var dx = 1;
     var verticalSpeedPlayer = 0;
     var gravity = 0.07;
 
@@ -71,6 +72,11 @@ function init(){
             if(score > bestScore){
                 bestScore = score;
             }
+            if(score-oldScore == 1000){
+                dx += 0.025;
+                oldScore=score;
+                console.log("speed up to " + dx.toString());
+            }
             document.body.onkeydown = function(e){
                 if(e.keyCode == 38){
                     if(nbJumps == 0){
@@ -92,11 +98,9 @@ function init(){
                 verticalSpeedPlayer = 0;
                 verticalAccelerationPlayer = 0;
                 nbJumps=0;
-                dx = 0.5;
             }else{ // player is flying or falling
                 player.y -= verticalSpeedPlayer;
                 verticalSpeedPlayer -= gravity; 
-                dx = 1;
             }
 
             for (var i = 0; i < obstacles.length; i++){ // obstacle position update
@@ -131,6 +135,7 @@ function init(){
                 document.body.onkeydown = function(e){
                     if(e.keyCode == 38){
                         container.innerHTML = '<canvas id="myCanvas"></canvas>';
+                        dx = 1;
                         obstacles = [];
                         getObstacle(0,obstacles);
                         player = {x:canvas.width/6, y:canvas.height-5 - 16, height:20, width:10};
