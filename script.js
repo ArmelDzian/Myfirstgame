@@ -59,7 +59,7 @@ function init(){
                 bestScore = score;
             }
             document.body.onkeydown = function(e){
-                if(e.keyCode == 32){
+                if(e.keyCode == 38){
                     if(nbJumps == 0){
                         console.log("Big jump");
                         verticalSpeedPlayer = 2.8;
