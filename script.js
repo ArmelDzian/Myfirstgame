@@ -28,15 +28,15 @@ function init(){
         document.getElementById("score").innerHTML = "SCORE : " + score.toString();
         document.getElementById("bestScore").innerHTML = "BEST SCORE : " + bestScore.toString();
         ctx.clearRect(0, 0, canvas.width, canvas.height); // refresh
-
-        for (var i = 0; i < obstacles.length; i++){ // obstacle drawing
-            ctx.beginPath();
-                ctx.rect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
-                ctx.fillStyle = "#666666";
-                ctx.fill();
-            ctx.closePath();
+        if (obstacles.length > 0){
+            for (var i = 0; i < obstacles.length; i++){ // obstacle drawing
+                ctx.beginPath();
+                    ctx.rect(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height);
+                    ctx.fillStyle = "#666666";
+                    ctx.fill();
+                ctx.closePath();
+            }
         }
-
         ctx.beginPath(); // player drawing
             ctx.rect(player.x, player.y, player.width, player.height);
             ctx.fillStyle = "#cc0000";
@@ -102,24 +102,27 @@ function init(){
                 player.y -= verticalSpeedPlayer;
                 verticalSpeedPlayer -= gravity; 
             }
-
+        
             for (var i = 0; i < obstacles.length; i++){ // obstacle position update
-                obstacles[i].x -= dx;
-                if (obstacles[i].x-obstacles[i].width < 0){ // delete the obstacle which passes over the left border of the canvas
-                    if(obstacles.length <= 1){
-                        getObstacle(0,obstacles);
-                    } 
-                    obstacles.splice(i,1);
-                    i--;
-                }else if((obstacles[i].x <= player.x + player.width) && (obstacles[i].x >= player.x) && (obstacles[i].y >= player.y) && (obstacles[i].y <= player.y+player.height)){
-                    // Check for collision with the player
-                    console.log("collision")
-                    gamerun = false;
+                if (obstacles.length > 0){
+                    obstacles[i].x -= dx;
+                    if (obstacles[i].x-obstacles[i].width < 0){ // delete the obstacle which passes over the left border of the canvas
+    //                   if(obstacles.length <= 1){
+    //                       getObstacle(0,obstacles);
+    //                   } 
+                        obstacles.splice(i,1);
+                        i--;
+                    }else if((obstacles[i].x <= player.x + player.width) && (obstacles[i].x >= player.x) && (obstacles[i].y >= player.y) && (obstacles[i].y <= player.y+player.height)){
+                        // Check for collision with the player
+                        console.log("collision")
+                        gamerun = false;
+                    }
                 }
-
             }
 
-            if (obstacles[obstacles.length-1].x < canvas.width-obstacles[obstacles.length-1].width){ //if the last obstacle is clear of the canvas edge, try to generate  new one
+            if ( obstacles.length < 1 ){ // generate a new obstacle even if there is none in the playground
+                getObstacle(Math.random(),obstacles);
+            }else if ( obstacles[obstacles.length-1].x < canvas.width-obstacles[obstacles.length-1].width){ // if the last obstacle is clear of the canvas edge, try to generate  new one
                 getObstacle(Math.random(),obstacles);
             }
             draw(); // call for the display refreshment
